@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@fewcha/web3": "*",
-    "@fewcha/web3-react": "0.1.2",
+    "@fewcha/web3-react": "*",
     "@sindresorhus/class-names": "^2.0.0",
     "@styled-icons/bootstrap": "^10.34.0",
     "@styled-icons/boxicons-solid": "^10.38.0",
