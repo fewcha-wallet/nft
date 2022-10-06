@@ -1222,24 +1222,32 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fewcha/web3-react@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@fewcha/web3-react/-/web3-react-0.1.2.tgz#a3ed01acce113f58b2070551735511738b43fa16"
-  integrity sha512-KCS0tAfePvu+TGdA5Hx6ILf6MQHrW2IfCfSkm1t7PyU0lcYPQfxE7M5CoppH0RF9+akafCrmHN8EIcjWy2jFHQ==
+"@fewcha/web3-react@*":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@fewcha/web3-react/-/web3-react-0.1.18.tgz#464f086acc61e36e35537696b618f955c4fafd2b"
+  integrity sha512-JbSVjLvaNYFRYCQacFIKqLMMhReMt2sjq/QHsMrzLIiwMIhWmhNexPPraWHdQvnOjQvSsuaMHyRLucIfp0tt7g==
   dependencies:
-    "@fewcha/web3" "^0.1.4"
+    "@fewcha/web3" "^0.1.18"
     lodash "^4.17.21"
     react "^18.2.0"
     react-dom "^18.2.0"
     styled-components "^5.3.5"
     uuid "^8.3.2"
 
-"@fewcha/web3@*", "@fewcha/web3@^0.1.4":
+"@fewcha/web3@*":
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/@fewcha/web3/-/web3-0.1.12.tgz#4bb06c8c98fd48f84bc55da73905fa6603dfdf45"
   integrity sha512-cAOkG0wS+YfXWst5PiN73pjmKu5cRAz87aXNvB5ZgItVH5vHiYckXecZGIijFxtkhFf0SPNF/CIpHe5bMn//XQ==
   dependencies:
     aptos "^1.2.2"
+    buffer "^6.0.3"
+
+"@fewcha/web3@^0.1.18":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@fewcha/web3/-/web3-0.1.18.tgz#8d9a9e193b7de8eb2a97fda83d759faf04b6f6f7"
+  integrity sha512-ZqzmKfqUylho/3VpzCE+g/ZwrSSzQcwjzlacT/N55LI1AzeeBciw24c/EgRl4iCM37WY6EDEkM2alOk2K5D27A==
+  dependencies:
+    aptos "^1.3.6"
     buffer "^6.0.3"
 
 "@humanwhocodes/config-array@^0.10.4":
@@ -2662,6 +2670,18 @@ aptos@^1.2.2:
     typescript-memoize "^1.1.0"
     yarn "^1.22.18"
 
+aptos@^1.3.6:
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/aptos/-/aptos-1.3.7.tgz#62beee339d7b12b5053aea9f881178085e120f1d"
+  integrity sha512-P8GgBnCTKBQKymabcEGk0hPxKWWuaqh4k+G3kTLjG0XUkTafngsr5bk97l2gYnrRnv/cdTnm1XpVDzrNTTgxCQ==
+  dependencies:
+    axios "^0.27.2"
+    buffer "^6.0.3"
+    js-sha3 "^0.8.0"
+    tweetnacl "^1.0.3"
+    typescript-memoize "^1.1.0"
+    yarn "^1.22.19"
+
 arg@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/arg/-/arg-5.0.2.tgz#c81433cc427c92c4dcf4865142dbca6f15acd59c"
@@ -2802,6 +2822,14 @@ axios@^0.26.1:
   integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
   dependencies:
     follow-redirects "^1.14.8"
+
+axios@^0.27.2:
+  version "0.27.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
+  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
+  dependencies:
+    follow-redirects "^1.14.9"
+    form-data "^4.0.0"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -4687,7 +4715,7 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.6.tgz#022e9218c637f9f3fc9c35ab9c9193f05add60b2"
   integrity sha512-0sQoMh9s0BYsm+12Huy/rkKxVu4R1+r96YX5cG44rHV0pQ6iC3Q+mkoMFaGWObMFYQxCVT+ssG1ksneA2MI9KQ==
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.8:
+follow-redirects@^1.0.0, follow-redirects@^1.14.8, follow-redirects@^1.14.9:
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
   integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
@@ -4715,6 +4743,15 @@ form-data@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.1.tgz#ebd53791b78356a99af9a300d4282c4d5eb9755f"
   integrity sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
+
+form-data@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
+  integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
@@ -9470,7 +9507,7 @@ yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yarn@^1.22.18:
+yarn@^1.22.18, yarn@^1.22.19:
   version "1.22.19"
   resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.19.tgz#4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
   integrity sha512-/0V5q0WbslqnwP91tirOvldvYISzaqhClxzyUKXYxs07yUILIs5jx/k6CFe8bvKSkds5w+eiOqta39Wk3WxdcQ==

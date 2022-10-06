@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { truncateEthAddress } from "utils/address";
+import { truncateEthAddress } from "utils/address";
 import { WalletAlt } from "@styled-icons/boxicons-solid";
 import { MENUS } from "config/constants";
 import logo from "../../public/svgs/logo.svg";
@@ -7,47 +7,54 @@ import MobileMenu from "./MobileHeader";
 // import MobileMenu from "./MobileMenu";
 // import { useWeb3 } from "components/Provider";
 // import { AptosAccount, MaybeHexString } from "@fewcha/aptos";
+import Aptos, { Web3Provider } from "@fewcha/web3";
+import { useWeb3 } from "@fewcha/web3-react";
+import Web3 from "@fewcha/web3";
+import { PublicAccount } from "@fewcha/web3/dist/types";
 
-const Header: React.FC = () => {
+const Header: React.FC<{
+  wallet: Aptos;
+  web3Account: PublicAccount;
+  isConnected: boolean;
+}> = ({ wallet, web3Account, isConnected }) => {
   const [showMobile, setShowMobile] = useState(false);
+  const [balance, setBalance] = useState("0");
 
   const toggleMobile = () => {
     setShowMobile(!showMobile);
     if (showMobile) document.body.style.overflow = "";
     else document.body.style.overflow = "hidden";
   };
-
-  const [balance, setBalance] = useState("");
-
-  //const aptos = useWeb3();
-  //   const { init, account, isConnected, connect, disconnect, web3 } = aptos;
-  //console.log(web3);
-  //   useEffect(() => {
-  //     if (isConnected && account) {
-  //       // console.log((account as any).address as MaybeHexString);
-  //       // console.log(typeof web3.getAccountResources(account));
-  //       // web3.getAccountResources((account as any).address as MaybeHexString).then((data) => {
-  //       //   const accountResource = data.find((r) => r.type === "0x1::Coin::CoinStore<0x1::TestCoin::TestCoin>");
-  //       //   const balance = (accountResource!.data as { coin: { value: string } }).coin.value;
-  //       //   setBalance(balance);
-  //       // });
-  //     }
-  //   }, [isConnected, account, web3, init]);
+  useEffect(() => {
+    if (isConnected && web3Account) {
+      wallet.action
+        .getBalance()
+        .then((data) => {
+          setBalance(data.data);
+        })
+        .catch(console.log);
+    }
+  }, [isConnected, web3Account, wallet]);
 
   const onShowButton = () => {
-    if (false) {
+    if (isConnected) {
       return (
         <div className="relative ml-auto flex items-center gap-6">
           <button
             className="p-2 shadow rounded bg-white text-sm font-medium text-black ml-auto flex items-center justify-between cursor-pointer"
-            // onClick={() => disconnect()}
+            onClick={() => {
+              wallet.action
+                .disconnect()
+                .then((data) => console.log(data))
+                .catch(console.log);
+            }}
           >
             <WalletAlt size={24} />
             <div className="hidden md:flex flex-col ml-2">
               <div className="mb-1">
-                {/* {truncateEthAddress((account as any).address)} */}
+                {truncateEthAddress(web3Account.address)}
               </div>
-              <div>APT: {}</div>
+              <div>APT: {balance}</div>
             </div>
           </button>
         </div>
@@ -57,7 +64,10 @@ const Header: React.FC = () => {
         <div className="relative ml-auto flex items-center gap-6">
           <button
             onClick={() => {
-              //   connect();
+              wallet.action
+                .connect()
+                .then(() => console.log)
+                .catch(console.log);
             }}
             className="hidden sm:inline-block px-6 py-[14px] bg-black text-white font-medium rounded-[34px]"
           >
@@ -75,8 +85,6 @@ const Header: React.FC = () => {
       );
     }
   };
-
-  //   if (!init) return <>Loading...</>;
 
   return (
     <header
