@@ -6,6 +6,7 @@ import "./styles/main.scss";
 import Web3Provider from "@fewcha/web3-react";
 import {Provider} from "react-redux";
 import store from "components/App/store";
+import { BrowserRouter } from "react-router-dom";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -14,7 +15,9 @@ root.render(
   <React.StrictMode>
     <Web3Provider>
       <Provider store={store}>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </Provider>
     </Web3Provider>
   </React.StrictMode>
