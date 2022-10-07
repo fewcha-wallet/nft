@@ -6,6 +6,11 @@ import right from "public/svgs/right.svg";
 import Aptos, { Web3Provider } from "@fewcha/web3";
 import { useWeb3 } from "@fewcha/web3-react";
 import Web3 from "@fewcha/web3";
+import Modal from "react-modal";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+Modal.setAppElement("#root");
 
 const App: React.FC = () => {
   const fewcha = (window as any).fewcha;
@@ -22,6 +27,7 @@ const App: React.FC = () => {
         isConnected={isConnected}
       />
       <NFTv2 wallet={web3} />
+      <ToastContainer />
     </div>
   );
 };
