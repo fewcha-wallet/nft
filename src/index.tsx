@@ -4,6 +4,8 @@ import App from "components/App/App";
 import reportWebVitals from "reportWebVitals";
 import "./styles/main.scss";
 import Web3Provider from "@fewcha/web3-react";
+import {Provider} from "react-redux";
+import store from "components/App/store";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -11,7 +13,9 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Web3Provider>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </Web3Provider>
   </React.StrictMode>
 );
