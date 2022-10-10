@@ -3,7 +3,9 @@ import { PublicAccount } from "@fewcha/web3/dist/types";
 import { MENUS } from "config/constants";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
+import { Link } from "react-router-dom";
 import { toast, ToastOptions } from "react-toastify";
+import cn from "services/cn";
 import styled from "styled-components";
 import { truncateEthAddress } from "utils/address";
 import icon_chevron_down from "../../assets2/image/chevron_down.svg";
@@ -46,6 +48,7 @@ const Header: React.FC<{
   const [hasConnectAnyWallet, setHasConnectAnyWallet] =
     useState<HasConnectWalletType>();
   const [currentLogo, setCurrentLogo] = useState<LogoType>();
+  const [currentPage, setCurrentPage] = useState("/");
 
   const listWallet: Array<WalletItemType> = [
     {
@@ -164,19 +167,20 @@ const Header: React.FC<{
       }
     } else if (nameCurrentWallet === "martian") {
       console.log("DISCONNECT MARTIAN WALLET");
-      try{
+      try {
         const res = await (window as any).martian.disconnect();
-        const statusAfterDisconnect = await (window as any).martian.isConnected()
-        if(res.method && !statusAfterDisconnect){
+        const statusAfterDisconnect = await (
+          window as any
+        ).martian.isConnected();
+        if (res.method && !statusAfterDisconnect) {
           setNameCurrentWallet("");
           setShowMore(false);
           setSelectHasBeenSelected("");
           setAddressCurrentWallet("");
         }
-        console.log('res: ',res)
-        console.log('statusAfterDisconnect: ',statusAfterDisconnect)
-        
-      }catch(error){
+        console.log("res: ", res);
+        console.log("statusAfterDisconnect: ", statusAfterDisconnect);
+      } catch (error) {
         console.log(error);
       }
     } else {
@@ -296,7 +300,7 @@ const Header: React.FC<{
     setShowModal(false);
   }
 
-  const showWalletSummaryAfterConnected = () => {
+  function connectWalletAndAfterConnect() {
     if (hasConnectAnyWallet) {
       return (
         <WalletSummaryInfo>
@@ -352,10 +356,10 @@ const Header: React.FC<{
       );
     }
     return (
-      <div className="relative ml-auto flex items-center gap-6">
+      <div className="relative flex items-center gap-6">
         <button
           onClick={handleShowDialogWallet}
-          className="hidden sm:inline-block px-6 py-[14px] bg-black text-white font-medium rounded-[34px]"
+          className="hidden sm:inline-block px-5 py-2.5 bg-black text-white font-medium rounded-[34px]"
         >
           Connect Wallet
         </button>
@@ -370,62 +374,61 @@ const Header: React.FC<{
         </div>
       </div>
     );
-  };
+  }
 
   return (
     <header
       className={
         showMobile
           ? "pt-4 fixed top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300"
-          : "relative pt-4 top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300"
+          : "relative py-2 top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300 bg-[#718093] text-white"
       }
     >
-      <div>
-        <div>
-          <Modal
-            isOpen={showModal}
-            onAfterOpen={afterOpenModal}
-            onRequestClose={closeModal}
-            style={customStylesModal}
-            contentLabel="Select Wallet"
+      {/* # 44bd32 */}
+      <Modal
+        isOpen={showModal}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStylesModal}
+        contentLabel="Select Wallet"
+      >
+        <section className="w-[450px] min-h-[220px] ">
+          <Title3>Select Wallet</Title3>
+          <button
+            onClick={closeModal}
+            className="cursor-pointer absolute top-4 right-5 hover:bg-[#ecf0f1] p-2 rounded-full group"
+            title="Close Dialog Choose Wallet"
           >
-            <section className="w-[450px] min-h-[220px] ">
-              <Title3>Select Wallet</Title3>
-              <button
-                onClick={closeModal}
-                className="cursor-pointer absolute top-4 right-5 hover:bg-[#ecf0f1] p-2 rounded-full group"
-                title="Close Dialog Choose Wallet"
-              >
-                <img src={icon_close} alt="Close Dialog Choose Wallet" />
-              </button>
+            <img src={icon_close} alt="Close Dialog Choose Wallet" />
+          </button>
 
-              {/* {isConnectFewchaWallet && (
+          {/* {isConnectFewchaWallet && (
                     <div className="flex gap-x-8 items-center">
                       <span className="text-sm italic">(connected)</span>
                       <img src={icon_check} alt="Connected" />
                     </div>
                   )} */}
 
-              <ListWallet className="mt-3 uppercase font-medium">
-                {listWallet.map((wallet) => (
-                  <WalletItem
-                    key={wallet.name}
-                    className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
-                    onClick={() => {
-                      setSelectHasBeenSelected(wallet.name);
-                      setNumberOfClicks((prev) => (prev += 1));
-                    }}
-                  >
-                    <img
-                      src={wallet.logo}
-                      alt="Martian Aptos Wallet"
-                      className="w-8 h-8 rounded-full "
-                    />
-                    <p>{wallet.label}</p>
-                  </WalletItem>
-                ))}
+          <ListWallet className="mt-3 uppercase font-medium">
+            {listWallet.map((wallet) => (
+              <WalletItem
+                key={wallet.name}
+                className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
+                onClick={() => {
+                  setSelectHasBeenSelected(wallet.name);
+                  setNumberOfClicks((prev) => (prev += 1));
+                }}
+              >
+                <img
+                  src={wallet.logo}
+                  alt="Martian Aptos Wallet"
+                  className="w-8 h-8 rounded-full "
+                />
+                <p>{wallet.label}</p>
+              </WalletItem>
+            ))}
 
-                {/* <WalletItem
+            {/* <WalletItem
                   className={cn(
                     "py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]",
                     {}
@@ -464,63 +467,37 @@ const Header: React.FC<{
                   />
                   <p>Petra Aptos Wallet</p>
                 </WalletItem> */}
-              </ListWallet>
-            </section>
-          </Modal>
-        </div>
-      </div>
+          </ListWallet>
+        </section>
+      </Modal>
 
-      <div className="container xs:px-13 flex items-center">
-        <div>
-          <a className="block">
-            <img
-              src={logo}
-              alt="logo"
-              className="max-w-[105px] md:max-w-[155px]"
-            />
-          </a>
-        </div>
-
-        <div className="hidden lg:flex items-center justify-end flex-1 gap-x-10 pr-[36px]">
-          {MENUS.map((menu, idx) => {
-            if (menu.external) {
-              return (
-                <div key={idx}>
-                  <a
-                    href={menu.external}
-                    key={idx}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="header-link py-2 block  font-medium font-caption transition-all ease-in duration-150 hover:text-primary-200"
-                  >
-                    {menu.name}
-                  </a>
-                </div>
-              );
-            }
-
-            if (menu.href) {
-              return (
-                <div key={idx}>
-                  <a
-                    onClick={(e) => {
-                      if (menu.href === "/#roadmap") {
-                        e.preventDefault();
-                      }
-                    }}
-                    className="header-link py-2 block  font-medium font-caption hover:text-primary-200"
-                  >
-                    {menu.name}
-                  </a>
-                </div>
-              );
-            }
-
-            return null;
+      <div className="container xs:px-13 flex items-center justify-between">
+        <Link to="/">
+          <img
+            src={logo}
+            alt="logo"
+            className="max-w-[105px] md:max-w-[155px]"
+            onClick={() => setCurrentPage('/')}
+          />
+        </Link>
+        {MENUS &&
+          MENUS.map((item) => {
+            return (
+              <Link
+                key={item.label}
+                to={item.path}
+                onClick={() => setCurrentPage(item.path)}
+                className={cn("mt-1.5 font-bold text-xl", {
+                  "text-[#e67e22]": currentPage === item.path,
+                })}
+              >
+                {item.label}
+              </Link>
+            );
           })}
-        </div>
-        {showWalletSummaryAfterConnected()}
+        {connectWalletAndAfterConnect()}
       </div>
+
       <MobileMenu isShow={showMobile} />
     </header>
   );

@@ -1,18 +1,15 @@
-export const MENUS = [
+interface MenuItemType {
+  path: string;
+  label: string;
+}
+
+export const MENUS: MenuItemType[] = [
+  // {
+  //   label: "Mint NFTs",
+  //   path: "/mint-nft",
+  // },
   {
-    href: "/",
-    name: "Home",
-  },
-  {
-    href: "/#contributors",
-    name: "Contributors",
-  },
-  {
-    external: "/#docs",
-    name: "Docs",
-  },
-  {
-    external: "/#mint",
-    name: "Mint NFTs",
+    label: "Event",
+    path: "/event",
   },
 ];
