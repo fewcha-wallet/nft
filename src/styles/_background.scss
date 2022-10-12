@@ -1,0 +1,12 @@
+.bg-event-page {
+  background-image: url("../assets2/image/img_bg.gif");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+  background-image: unset;
+}
+
+.content-event-page {
+  min-height: calc(100vh - 60px);
+}

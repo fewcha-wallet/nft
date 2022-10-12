@@ -1,9 +1,14 @@
 import Aptos from "@fewcha/web3";
 import { PublicAccount } from "@fewcha/web3/dist/types";
+import { UseAppDispatch, useAppSelector } from "components/App/hooks";
 import { MENUS } from "config/constants";
+import {
+  selectInfoFewcha,
+  updateInfoFewchaWallet,
+} from "feature/wallet/fewchaSlice";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast, ToastOptions } from "react-toastify";
 import cn from "services/cn";
 import styled from "styled-components";
@@ -22,7 +27,7 @@ const ListWallet = styled.aside``;
 const WalletItem = styled.div``;
 const WalletSummaryInfo = styled.div``;
 
-type NameWallet = "fewcha" | "petra" | "martian" | "";
+type NameWallet = "fewcha" | "petra" | "martian" | "" | null;
 interface WalletItemType {
   name: NameWallet;
   logo: string;
@@ -37,6 +42,7 @@ const Header: React.FC<{
   isConnected: boolean;
 }> = ({ wallet, web3Account, isConnected }) => {
   const [showMobile, setShowMobile] = useState(false);
+
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [walletHasBeenSelected, setSelectHasBeenSelected] =
@@ -47,8 +53,27 @@ const Header: React.FC<{
   const [nameCurrentWallet, setNameCurrentWallet] = useState<NameWallet>("");
   const [hasConnectAnyWallet, setHasConnectAnyWallet] =
     useState<HasConnectWalletType>();
+
   const [currentLogo, setCurrentLogo] = useState<LogoType>();
   const [currentPage, setCurrentPage] = useState("/");
+  const [pathName, setPathName] = useState<string | undefined>();
+  const [disConnectWallet, setDisconnectWallet] = useState<string | null>("");
+
+  const fewchaInStore = useAppSelector(selectInfoFewcha);
+  useEffect(() => {
+    console.log("fewchaInStore at Header ===> : ", fewchaInStore);
+    if (fewchaInStore.isConnected) {
+      setHasConnectAnyWallet(true);
+      setNameCurrentWallet("fewcha");
+      setAddressCurrentWallet(fewchaInStore.address);
+    }
+  }, [fewchaInStore]);
+  const dispatch = UseAppDispatch();
+
+  const myLocation = useLocation();
+  useEffect(() => {
+    setPathName(myLocation.pathname);
+  }, [myLocation.pathname]);
 
   const listWallet: Array<WalletItemType> = [
     {
@@ -72,6 +97,44 @@ const Header: React.FC<{
     if (showMobile) document.body.style.overflow = "";
     else document.body.style.overflow = "hidden";
   };
+  useEffect(() => {
+    let i = 0;
+    const idInterval = setInterval(() => {
+      i++;
+      if (i > 3) {
+        clearInterval(idInterval);
+        return;
+      }
+      if ((window as any)?.fewcha?.isFewcha) {
+        console.log("run interval...");
+        clearInterval(idInterval);
+        return;
+      } else {
+        location.reload();
+      }
+    }, 10000);
+  }, []);
+
+  useEffect(() => {
+    if (!nameCurrentWallet) return;
+    if (nameCurrentWallet === "fewcha") {
+      dispatch(
+        updateInfoFewchaWallet({
+          isConnected: true,
+          address: addressCurrentWallet,
+        })
+      );
+    }
+  }, [nameCurrentWallet]);
+
+  useEffect(() => {
+    if (!disConnectWallet) return;
+    if (disConnectWallet === "fewcha") {
+      dispatch(updateInfoFewchaWallet({ isConnected: false, address: "" }));
+    }
+  }, [disConnectWallet]);
+
+  const hasPetra = (window as any).petra;
 
   const customStylesModal = {
     content: {
@@ -157,7 +220,8 @@ const Header: React.FC<{
         const response = await wallet.action.disconnect();
         console.log("response: ", response);
         if (response.data) {
-          setNameCurrentWallet("");
+          setDisconnectWallet("fewcha");
+          setNameCurrentWallet(null);
           setShowMore(false);
           setSelectHasBeenSelected("");
           setAddressCurrentWallet("");
@@ -356,7 +420,7 @@ const Header: React.FC<{
       );
     }
     return (
-      <div className="relative flex items-center gap-6">
+      <div className="relative flex items-center gap-6 px-3 md:px-0">
         <button
           onClick={handleShowDialogWallet}
           className="hidden sm:inline-block px-5 py-2.5 bg-black text-white font-medium rounded-[34px]"
@@ -365,7 +429,7 @@ const Header: React.FC<{
         </button>
 
         <div
-          className={`block lg:hidden hambuger ${
+          className={`block md:hidden hambuger ${
             showMobile ? "is-active" : ""
           }`}
           onClick={toggleMobile}
@@ -471,13 +535,17 @@ const Header: React.FC<{
         </section>
       </Modal>
 
-      <div className="container xs:px-13 flex items-center justify-between">
+      <div
+        className={cn("container xs:px-13 flex items-center justify-between", {
+          "": pathName === "/event",
+        })}
+      >
         <Link to="/">
           <img
             src={logo}
             alt="logo"
             className="max-w-[105px] md:max-w-[155px]"
-            onClick={() => setCurrentPage('/')}
+            onClick={() => setCurrentPage("/")}
           />
         </Link>
         {MENUS &&
