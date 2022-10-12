@@ -18,6 +18,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/react-modal": "^3.13.1",
+    "@types/react-router-dom": "^5.3.3",
     "@types/react-scroll": "^1.8.3",
     "@types/styled-components": "^5.1.25",
     "eslint": "8.19.0",
