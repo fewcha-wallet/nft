@@ -1,7 +1,7 @@
 import Aptos from "@fewcha/web3";
 import { PublicAccount } from "@fewcha/web3/dist/types";
 import { UseAppDispatch, useAppSelector } from "components/App/hooks";
-import { MENUS } from "config/constants";
+import { customStylesModal, MENUS } from "config/constants";
 import {
   selectInfoFewcha,
   updateInfoFewchaWallet,
@@ -135,20 +135,6 @@ const Header: React.FC<{
   }, [disConnectWallet]);
 
   const hasPetra = (window as any).petra;
-
-  const customStylesModal = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      background: "white",
-      padding: "24px",
-      borderRadius: "14px",
-    },
-  };
 
   const optionsToastify: ToastOptions<{}> = {
     position: "top-right",
@@ -491,46 +477,6 @@ const Header: React.FC<{
                 <p>{wallet.label}</p>
               </WalletItem>
             ))}
-
-            {/* <WalletItem
-                  className={cn(
-                    "py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]",
-                    {}
-                  )}
-                  onClick={handleConnectFewchaWallet}
-                >
-                  <img
-                    src={logo_fewcha}
-                    alt="Fewcha Aptos Wallet"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <p>Fewcha Aptos Wallet</p>
-                </WalletItem>
-
-                <WalletItem
-                  className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
-                  onClick={handleConnectMartianWallet}
-                >
-                  <img
-                    src={logo_martian}
-                    alt="Martian Aptos Wallet"
-                    className="w-8 h-8 rounded-full "
-                  />
-                  <p>Martian Aptos Wallet</p>
-                </WalletItem>
-
-                <WalletItem
-                  className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
-                  onClick={handleConnectPetraWallet}
-                >
-                  <img
-                    src={logo_petra}
-                    alt="Petra Aptos Wallet"
-                    className="w-8 h-8 rounded-[3px] "
-                  />
-                  <p>Petra Aptos Wallet</p>
-                </WalletItem> */}
           </ListWallet>
         </section>
       </Modal>
