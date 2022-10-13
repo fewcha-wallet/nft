@@ -8,7 +8,7 @@ const TextDes = styled.p`
 const SectionText: React.FC<{ className?: string }> = ({ className }) => {
 
   return (
-    <div className={`${className} text-white pt-[160px] px-8`}>
+    <div className={`${className} text-white py-10 md:pt-6  px-8`}>
       <h1 className="text-[36px]">Lorem ipsum dolor sit amet</h1>
       <h3 className="text-[32px]">Lorem ipsum dolor!</h3>
       <TextDes>

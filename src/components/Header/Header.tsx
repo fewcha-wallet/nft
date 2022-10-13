@@ -1,15 +1,18 @@
 import Aptos from "@fewcha/web3";
 import { PublicAccount } from "@fewcha/web3/dist/types";
 import { UseAppDispatch, useAppSelector } from "components/App/hooks";
-import { customStylesModal, MENUS } from "config/constants";
 import {
-  selectInfoFewcha,
-  updateInfoFewchaWallet,
-} from "feature/wallet/fewchaSlice";
+  HasConnectWalletType,
+  listWalletData,
+  LogoType,
+  NameWallet,
+} from "components/App/type";
+import { customStylesModal, MENUS, optionsToastify } from "config/constants";
+import { selectWallet, updateWallet } from "feature/wallet/wallet";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { Link, useLocation } from "react-router-dom";
-import { toast, ToastOptions } from "react-toastify";
+import { toast } from "react-toastify";
 import cn from "services/cn";
 import styled from "styled-components";
 import { truncateEthAddress } from "utils/address";
@@ -27,22 +30,12 @@ const ListWallet = styled.aside``;
 const WalletItem = styled.div``;
 const WalletSummaryInfo = styled.div``;
 
-type NameWallet = "fewcha" | "petra" | "martian" | "" | null;
-interface WalletItemType {
-  name: NameWallet;
-  logo: string;
-  label: string;
-}
-type LogoType = string | undefined;
-type HasConnectWalletType = boolean | undefined;
-
 const Header: React.FC<{
   wallet: Aptos;
   web3Account: PublicAccount;
   isConnected: boolean;
 }> = ({ wallet, web3Account, isConnected }) => {
   const [showMobile, setShowMobile] = useState(false);
-
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [walletHasBeenSelected, setSelectHasBeenSelected] =
@@ -58,40 +51,36 @@ const Header: React.FC<{
   const [currentPage, setCurrentPage] = useState("/");
   const [pathName, setPathName] = useState<string | undefined>();
   const [disConnectWallet, setDisconnectWallet] = useState<string | null>("");
-
-  const fewchaInStore = useAppSelector(selectInfoFewcha);
-  useEffect(() => {
-    console.log("fewchaInStore at Header ===> : ", fewchaInStore);
-    if (fewchaInStore.isConnected) {
-      setHasConnectAnyWallet(true);
-      setNameCurrentWallet("fewcha");
-      setAddressCurrentWallet(fewchaInStore.address);
-    }
-  }, [fewchaInStore]);
   const dispatch = UseAppDispatch();
-
   const myLocation = useLocation();
+
+  const [isConnectedWallet, setIsConnectedWallet] = useState<boolean>(false);
+
+  const walletInStore = useAppSelector(selectWallet)
+  console.log("walletInStore: ", walletInStore);
+
+  useEffect(() => {
+    if (walletInStore) {
+      setNameCurrentWallet(walletInStore.name);
+      setAddressCurrentWallet(walletInStore.address);
+      setIsConnectedWallet(walletInStore.isConnected);
+    }
+  }, [walletInStore.name]);
+
+  // -----> UPDATE WALLET IN STORE ---->
+  useEffect(() => {
+    const data = {
+      name: nameCurrentWallet,
+      address: addressCurrentWallet,
+      isConnected: isConnectedWallet,
+    };
+    dispatch(updateWallet(data));
+  }, [nameCurrentWallet, addressCurrentWallet, isConnectedWallet]);
+
   useEffect(() => {
     setPathName(myLocation.pathname);
   }, [myLocation.pathname]);
 
-  const listWallet: Array<WalletItemType> = [
-    {
-      name: "fewcha",
-      logo: logo_fewcha,
-      label: "Fewcha Aptos Wallet",
-    },
-    {
-      name: "martian",
-      logo: logo_martian,
-      label: "Martian Aptos Wallet",
-    },
-    {
-      name: "petra",
-      logo: logo_petra,
-      label: "Petra Aptos Wallet",
-    },
-  ];
   const toggleMobile = () => {
     setShowMobile(!showMobile);
     if (showMobile) document.body.style.overflow = "";
@@ -116,36 +105,21 @@ const Header: React.FC<{
   }, []);
 
   useEffect(() => {
-    if (!nameCurrentWallet) return;
+    if (!nameCurrentWallet) {
+      setHasConnectAnyWallet(false);
+      setCurrentLogo("");
+      return;
+    }
+    setHasConnectAnyWallet(true);
+
     if (nameCurrentWallet === "fewcha") {
-      dispatch(
-        updateInfoFewchaWallet({
-          isConnected: true,
-          address: addressCurrentWallet,
-        })
-      );
+      setCurrentLogo(logo_fewcha);
+    } else if (nameCurrentWallet === "martian") {
+      setCurrentLogo(logo_martian);
+    } else {
+      setCurrentLogo(logo_petra);
     }
   }, [nameCurrentWallet]);
-
-  useEffect(() => {
-    if (!disConnectWallet) return;
-    if (disConnectWallet === "fewcha") {
-      dispatch(updateInfoFewchaWallet({ isConnected: false, address: "" }));
-    }
-  }, [disConnectWallet]);
-
-  const hasPetra = (window as any).petra;
-
-  const optionsToastify: ToastOptions<{}> = {
-    position: "top-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    type: "success",
-  };
 
   // ---------> CONNECT WALLET --------->
   useEffect(() => {
@@ -187,68 +161,13 @@ const Header: React.FC<{
         setNameCurrentWallet("fewcha");
         setHasConnectAnyWallet(true);
         setAddressCurrentWallet(res.data.address);
+        setIsConnectedWallet(true);
         setTimeout(() => {
           setShowModal(false);
         }, 1000);
       }
     } catch (error) {
       console.log("Error: ", error);
-    }
-  }
-
-  // ----> DISCONNECT  WALLET ---->
-  async function handleDisconnectWallet() {
-    if (!hasConnectAnyWallet) return;
-    console.log("DISCONNECT  WALLET ----> ");
-    if (nameCurrentWallet === "fewcha") {
-      console.log("DISCONNECT FEWCHA WALLET ----> ");
-      try {
-        const response = await wallet.action.disconnect();
-        console.log("response: ", response);
-        if (response.data) {
-          setDisconnectWallet("fewcha");
-          setNameCurrentWallet(null);
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (nameCurrentWallet === "martian") {
-      console.log("DISCONNECT MARTIAN WALLET");
-      try {
-        const res = await (window as any).martian.disconnect();
-        const statusAfterDisconnect = await (
-          window as any
-        ).martian.isConnected();
-        if (res.method && !statusAfterDisconnect) {
-          setNameCurrentWallet("");
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-        }
-        console.log("res: ", res);
-        console.log("statusAfterDisconnect: ", statusAfterDisconnect);
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log("DISCONNECT PETRA WALLET ----> ");
-      try {
-        const response = await (window as any).petra.disconnect();
-        const isConnectedAfterDisconnect = await (
-          window as any
-        ).petra.isConnected();
-        if (!isConnectedAfterDisconnect) {
-          setNameCurrentWallet("");
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-        }
-      } catch (error) {
-        console.log("Error: ", error);
-      }
     }
   }
 
@@ -271,17 +190,23 @@ const Header: React.FC<{
       }, 2800);
       return;
     }
-    const res = await hasMartianInWindow.connect();
-    if (res.status === 200 && res.address) {
-      setAddressCurrentWallet(res.address);
-      setNameCurrentWallet("martian");
-      setHasConnectAnyWallet(true);
-      toast("Connect Petra Wallet successfully!", optionsToastify);
-      setTimeout(() => {
-        setShowModal(false);
-      }, 1000);
+    try {
+      const res = await hasMartianInWindow.connect();
+      if (res.status === 200 && res.address) {
+        setAddressCurrentWallet(res.address);
+        setNameCurrentWallet("martian");
+        setHasConnectAnyWallet(true);
+        setIsConnectedWallet(true);
+        toast("Connect Petra Wallet successfully!", optionsToastify);
+        setTimeout(() => {
+          setShowModal(false);
+        }, 1000);
+      }
+      console.log("res: ", res);
+    } catch (error) {
+      console.log("error ---> ", error);
+      toast(" Wallet setup required", optionsToastify);
     }
-    console.log("res: ", res);
   }
 
   // -----> CONNECT PETRA WALLET ---->
@@ -309,6 +234,7 @@ const Header: React.FC<{
       setNameCurrentWallet("petra");
       setAddressCurrentWallet(resultConnect.address);
       setHasConnectAnyWallet(true);
+      setIsConnectedWallet(true);
       toast("Connect Petra Wallet successfully!", optionsToastify);
       setTimeout(() => {
         setShowModal(false);
@@ -316,21 +242,64 @@ const Header: React.FC<{
     }
   }
 
-  useEffect(() => {
-    if (!nameCurrentWallet) {
-      setHasConnectAnyWallet(false);
-    }
-  }, [nameCurrentWallet]);
-
-  useEffect(() => {
+  // ----> DISCONNECT  WALLET ---->
+  async function handleDisconnectWallet() {
+    if (!hasConnectAnyWallet) return;
+    console.log("DISCONNECT  WALLET ----> ");
     if (nameCurrentWallet === "fewcha") {
-      setCurrentLogo(logo_fewcha);
+      console.log("DISCONNECT FEWCHA WALLET ----> ");
+      try {
+        const response = await wallet.action.disconnect();
+        console.log("response: ", response);
+        if (response.data) {
+          setDisconnectWallet("fewcha");
+          setNameCurrentWallet(null);
+          setShowMore(false);
+          setSelectHasBeenSelected("");
+          setAddressCurrentWallet("");
+          setIsConnectedWallet(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } else if (nameCurrentWallet === "martian") {
-      setCurrentLogo(logo_martian);
+      console.log("DISCONNECT MARTIAN WALLET");
+      try {
+        const res = await (window as any).martian.disconnect();
+        const statusAfterDisconnect = await (
+          window as any
+        ).martian.isConnected();
+        if (res.method && !statusAfterDisconnect) {
+          setNameCurrentWallet("");
+          setShowMore(false);
+          setSelectHasBeenSelected("");
+          setAddressCurrentWallet("");
+          setIsConnectedWallet(false);
+        }
+        console.log("res: ", res);
+        console.log("statusAfterDisconnect: ", statusAfterDisconnect);
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      setCurrentLogo(logo_petra);
+      console.log("DISCONNECT PETRA WALLET ----> ");
+      try {
+        const response = await (window as any).petra.disconnect();
+        const isConnectedAfterDisconnect = await (
+          window as any
+        ).petra.isConnected();
+        if (!isConnectedAfterDisconnect) {
+          setNameCurrentWallet("");
+          setShowMore(false);
+          setSelectHasBeenSelected("");
+          setAddressCurrentWallet("");
+          setIsConnectedWallet(false);
+        }
+      } catch (error) {
+        console.log("Error: ", error);
+      }
     }
-  }, [nameCurrentWallet]);
+  }
 
   // ------> SELECT OTHER WALLET ----->
   function handleSlectOtherWallet(e: any) {
@@ -383,7 +352,6 @@ const Header: React.FC<{
             >
               <article className="flex gap-x-2 mb-1 items-center hover:text-red-500">
                 <p>Disconnect</p>
-                {/* <img src={icon_arrow_right_exit} alt="Disconnect" /> */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 576 512"
@@ -426,6 +394,7 @@ const Header: React.FC<{
     );
   }
 
+  // -----> RENDER UI ----->
   return (
     <header
       className={
@@ -434,7 +403,6 @@ const Header: React.FC<{
           : "relative py-2 top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300 bg-[#718093] text-white"
       }
     >
-      {/* # 44bd32 */}
       <Modal
         isOpen={showModal}
         onAfterOpen={afterOpenModal}
@@ -452,15 +420,8 @@ const Header: React.FC<{
             <img src={icon_close} alt="Close Dialog Choose Wallet" />
           </button>
 
-          {/* {isConnectFewchaWallet && (
-                    <div className="flex gap-x-8 items-center">
-                      <span className="text-sm italic">(connected)</span>
-                      <img src={icon_check} alt="Connected" />
-                    </div>
-                  )} */}
-
           <ListWallet className="mt-3 uppercase font-medium">
-            {listWallet.map((wallet) => (
+            {listWalletData.map((wallet) => (
               <WalletItem
                 key={wallet.name}
                 className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
@@ -471,7 +432,7 @@ const Header: React.FC<{
               >
                 <img
                   src={wallet.logo}
-                  alt="Martian Aptos Wallet"
+                  alt={wallet.label}
                   className="w-8 h-8 rounded-full "
                 />
                 <p>{wallet.label}</p>

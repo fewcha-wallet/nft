@@ -113,6 +113,17 @@
 .border2 {
   border: 1px solid blue;
 }
-*{
+* {
   box-sizing: border-box !important;
+}
+.h-event-page {
+  height: calc(100vh - 60px);
+  background: linear-gradient(
+      248deg,
+      #dbdfe4 1.44%,
+      #e1ebef 33.25%,
+      #f4fafc 53%,
+      rgba(232, 244, 255, 0.19) 69.71%,
+      #ffffff 100%
+    );
 }

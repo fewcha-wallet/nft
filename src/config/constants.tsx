@@ -1,7 +1,7 @@
 import logo_discord from "../../src/assets2/image/discord.svg";
+import { ToastOptions } from "react-toastify";
 
 import logo_twitter from "../../src/assets2/image/twitter.svg";
-
 
 interface MenuItemType {
   path: string;
@@ -9,10 +9,10 @@ interface MenuItemType {
 }
 
 export const MENUS: MenuItemType[] = [
-  // {
-  //   label: "Mint NFTs",
-  //   path: "/mint-nft",
-  // },
+  {
+    label: "Mint NFTs",
+    path: "/mint-nft",
+  },
   {
     label: "Event",
     path: "/event",
@@ -37,7 +37,7 @@ interface ItemSocial {
   id: number;
   name: string;
   des: string;
-  icon: any;
+  icon: string;
 }
 export const ListSocial: ItemSocial[] = [
   {
@@ -53,3 +53,13 @@ export const ListSocial: ItemSocial[] = [
     icon: logo_twitter,
   },
 ];
+export const optionsToastify: ToastOptions<{}> = {
+  position: "top-right",
+  autoClose: 2000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  type: "success",
+};

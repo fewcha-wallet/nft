@@ -8,7 +8,7 @@ const MintNFTPage: React.FC = () => {
   const web3 = new Web3(provider);
 
   return (
-    <div>
+    <div className="main-bg">
       <NFTv2 wallet={web3} />
     </div>
   );

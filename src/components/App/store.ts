@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "feature/theme/themeSlice";
-import fewchaReducer from "feature/wallet/fewchaSlice";
+import walletReducer from "feature/wallet/wallet";
 
 const store = configureStore({
   reducer: {
     theme: themeReducer,
-    fewcha:fewchaReducer
+    wallet: walletReducer
   },
 });
 
