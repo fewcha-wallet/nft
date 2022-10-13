@@ -23,7 +23,7 @@ const App: React.FC = () => {
  
 
   return (
-    <div className="relative main-bg">
+    <div className="">
       {/* <img className=" main-bg-left" src={left} alt="left" />
       <img className="main-bg-right" src={right} alt="right" /> */}
       <Header
