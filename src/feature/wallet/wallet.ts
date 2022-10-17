@@ -26,11 +26,17 @@ export const WalletSlice = createSlice({
       state.address = action.payload.address;
       state.isConnected = action.payload.isConnected;
     },
+    disConnectWallet(state) {
+      state.name = "";
+      state.isConnected = false;
+      state.address = "";
+    },
   },
 });
-export const { updateWallet } = WalletSlice.actions;
+export const { updateWallet, disConnectWallet } = WalletSlice.actions;
 export const selectWallet = (state: RootState) => state.wallet;
 export const selectNameWallet = (state: RootState) => state.wallet.name;
+export const selectIsConnected = (state:RootState) => state.wallet.isConnected;
 
 const walletReducer = WalletSlice.reducer;
 export default walletReducer;

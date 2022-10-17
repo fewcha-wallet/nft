@@ -1,17 +1,14 @@
 import { UseAppDispatch, useAppSelector } from "components/App/hooks";
 import { NameWallet } from "components/App/type";
-import { customStylesModal, ListSocial } from "config/constants";
+import { customStylesModal, ListSocial, msgFewcha } from "config/constants";
 import { selectNameWallet, updateWallet } from "feature/wallet/wallet";
+import { notInstall } from "libs/libs";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import icon_close from "../../assets2/image/icon_close.svg";
 import img_nft_demo from "../../assets2/image/NFT1.jpg";
 
 const SectionImg: React.FC<{ className?: string }> = ({ className }) => {
-  const [isConnectedFewcha, setIsConnected] = useState<boolean>(false);
-  const [addressFewchaWallet, setAddressWallet] = useState<string>("");
-  const [nameFewchaWallet, setNameWallet] = useState<NameWallet>("");
-  const fewcha = (window as any).fewcha;
   const [showModalSocial, setShowModalSocial] = useState<boolean>(false);
   const [socialName, setSocialName] = useState<string>("");
 
@@ -24,37 +21,24 @@ const SectionImg: React.FC<{ className?: string }> = ({ className }) => {
     setShowModalSocial(false);
   }
   const nameWalletInStore = useAppSelector(selectNameWallet);
-  console.log("nameWalletInStore: ", nameWalletInStore);
-
-  useEffect(() => {
-    if(nameWalletInStore !== "fewcha"){
-      setNameWallet("")
-    }
-  },[nameWalletInStore])
-
-  useEffect(() => {
-    if (!nameFewchaWallet) return;
-    console.log("run..");
-    dispatch(
-      updateWallet({ name: nameFewchaWallet, address: addressFewchaWallet, isConnected:isConnectedFewcha })
-    );
-  }, [nameFewchaWallet]);
+  // console.log("nameWalletInStore: ", nameWalletInStore);
 
   const handleConnectFewchaWallet = async () => {
-    if (fewcha?.isFewcha) {
-      const res = await fewcha.connect();
-      console.log("fewcha: ", fewcha);
-      console.log("Result connect: ", res);
-      if (res.status) {
-        setIsConnected(true);
-        if (res.data?.address) setAddressWallet(res.data?.address);
-        setNameWallet("fewcha");
+    const fewcha = (window as any).fewcha;
+    if (fewcha) {
+      try {
+        const res = await fewcha.connect();
+        console.log("Result connect Fewcha: ", res);
+        if (res.status === 200) {
+          if (res.data?.address) {
+            dispatch(updateWallet({ name: "fewcha", isConnected: true, address: res.data.address }))
+          }
+        }
+      } catch (error) {
+        console.log('error: ', error);
       }
     } else {
-      window.open(
-        "https://chrome.google.com/webstore/detail/fewcha-aptos-wallet/ebfidpplhabeedpnhjnobghokpiioolj",
-        "_blank"
-      );
+      notInstall(msgFewcha.msg, msgFewcha.urlExt)
     }
   };
 

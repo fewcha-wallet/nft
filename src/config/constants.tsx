@@ -1,5 +1,5 @@
 import logo_discord from "../../src/assets2/image/discord.svg";
-import { ToastOptions } from "react-toastify";
+import { toast, ToastOptions, TypeOptions } from "react-toastify";
 
 import logo_twitter from "../../src/assets2/image/twitter.svg";
 
@@ -61,5 +61,27 @@ export const optionsToastify: ToastOptions<{}> = {
   pauseOnHover: true,
   draggable: true,
   progress: undefined,
-  type: "success",
+  type: "info",
 };
+
+
+
+interface MsgType {
+  msg: string;
+  urlExt: string;
+}
+
+export const msgFewcha: MsgType = {
+  msg: "You have not installed fewcha wallet app! You will be redirected to the install page",
+  urlExt:
+    "https://chrome.google.com/webstore/detail/fewcha-aptos-wallet/ebfidpplhabeedpnhjnobghokpiioolj",
+};
+
+export const msgMartian: MsgType = {
+  msg: "You have not installed martian wallet app! You will be redirected to the install page",
+  urlExt: "https://chrome.google.com/webstore/detail/martian-aptos-wallet/efbglgofoippbgcjepnhiblaibcnclgk/related",
+}
+export const msgPetra: MsgType = {
+  msg: "You have not installed Petra wallet extension! You will be redirected to the settings page",
+  urlExt: "https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci"
+}

@@ -5,10 +5,11 @@ import {
   HasConnectWalletType,
   listWalletData,
   LogoType,
-  NameWallet,
+  NameWallet
 } from "components/App/type";
-import { customStylesModal, MENUS, optionsToastify } from "config/constants";
-import { selectWallet, updateWallet } from "feature/wallet/wallet";
+import { customStylesModal, MENUS, msgFewcha, msgMartian, msgPetra, optionsToastify } from "config/constants";
+import { disConnectWallet, selectIsConnected, selectWallet, updateWallet } from "feature/wallet/wallet";
+import { myToast, notInstall } from "libs/libs";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { Link, useLocation } from "react-router-dom";
@@ -22,6 +23,7 @@ import icon_close from "../../assets2/image/icon_close.svg";
 import logo_fewcha from "../../assets2/image/logo_fewcha.jpg";
 import logo_martian from "../../assets2/image/logo_martian.jpg";
 import logo_petra from "../../assets2/image/logo_petra.jpg";
+import icon_check from "../../assets2/image/icon_check.svg";
 import logo from "../../public/svgs/logo.svg";
 import { Title3 } from "../common/StyledComponent";
 import MobileMenu from "./MobileHeader";
@@ -38,10 +40,6 @@ const Header: React.FC<{
   const [showMobile, setShowMobile] = useState(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
-  const [walletHasBeenSelected, setSelectHasBeenSelected] =
-    useState<NameWallet>("");
-  const [numberOfClicks, setNumberOfClicks] = useState<number>(0);
-
   const [addressCurrentWallet, setAddressCurrentWallet] = useState<string>("");
   const [nameCurrentWallet, setNameCurrentWallet] = useState<NameWallet>("");
   const [hasConnectAnyWallet, setHasConnectAnyWallet] =
@@ -50,32 +48,44 @@ const Header: React.FC<{
   const [currentLogo, setCurrentLogo] = useState<LogoType>();
   const [currentPage, setCurrentPage] = useState("/");
   const [pathName, setPathName] = useState<string | undefined>();
-  const [disConnectWallet, setDisconnectWallet] = useState<string | null>("");
   const dispatch = UseAppDispatch();
   const myLocation = useLocation();
 
   const [isConnectedWallet, setIsConnectedWallet] = useState<boolean>(false);
 
   const walletInStore = useAppSelector(selectWallet)
-  console.log("walletInStore: ", walletInStore);
+
+  const isConnectedInStore = useAppSelector(selectIsConnected)
+  // console.log("isConnectedInStore: ", isConnectedInStore);
 
   useEffect(() => {
-    if (walletInStore) {
-      setNameCurrentWallet(walletInStore.name);
-      setAddressCurrentWallet(walletInStore.address);
-      setIsConnectedWallet(walletInStore.isConnected);
+    if(isConnectedInStore){
+      setAddressCurrentWallet(walletInStore.address)  
+      setNameCurrentWallet(walletInStore.name)
     }
-  }, [walletInStore.name]);
+  },[isConnectedInStore,walletInStore.name])
 
-  // -----> UPDATE WALLET IN STORE ---->
-  useEffect(() => {
-    const data = {
-      name: nameCurrentWallet,
-      address: addressCurrentWallet,
-      isConnected: isConnectedWallet,
-    };
-    dispatch(updateWallet(data));
-  }, [nameCurrentWallet, addressCurrentWallet, isConnectedWallet]);
+
+  const reset = () => {
+    setNameCurrentWallet(null);
+    setAddressCurrentWallet("");
+    setIsConnectedWallet(false);
+    setShowMore(false);
+  }
+
+  const disconnect = () => dispatch(disConnectWallet())
+
+  const success = (name: NameWallet, address: string, time: number = 1000): void => {
+    setNameCurrentWallet(name);
+    setAddressCurrentWallet(address)
+    setHasConnectAnyWallet(true);
+    setIsConnectedWallet(true);
+    setTimeout(() => {
+      setShowModal(false);
+    }, time);
+    dispatch(updateWallet({ name, address, isConnected: isConnectedWallet }))
+  }
+
 
   useEffect(() => {
     setPathName(myLocation.pathname);
@@ -86,23 +96,7 @@ const Header: React.FC<{
     if (showMobile) document.body.style.overflow = "";
     else document.body.style.overflow = "hidden";
   };
-  useEffect(() => {
-    let i = 0;
-    const idInterval = setInterval(() => {
-      i++;
-      if (i > 3) {
-        clearInterval(idInterval);
-        return;
-      }
-      if ((window as any)?.fewcha?.isFewcha) {
-        console.log("run interval...");
-        clearInterval(idInterval);
-        return;
-      } else {
-        location.reload();
-      }
-    }, 10000);
-  }, []);
+
 
   useEffect(() => {
     if (!nameCurrentWallet) {
@@ -111,134 +105,104 @@ const Header: React.FC<{
       return;
     }
     setHasConnectAnyWallet(true);
-
-    if (nameCurrentWallet === "fewcha") {
-      setCurrentLogo(logo_fewcha);
-    } else if (nameCurrentWallet === "martian") {
-      setCurrentLogo(logo_martian);
-    } else {
-      setCurrentLogo(logo_petra);
+    switch (nameCurrentWallet) {
+      case "fewcha":
+        setCurrentLogo(logo_fewcha);
+        break;
+      case "martian":
+        setCurrentLogo(logo_martian);
+        break;
+      case "petra":
+        setCurrentLogo(logo_petra);
+        break;
+      default: return;
     }
   }, [nameCurrentWallet]);
 
   // ---------> CONNECT WALLET --------->
-  useEffect(() => {
-    if (!walletHasBeenSelected) return;
-    if (walletHasBeenSelected === "fewcha") {
+  function handleConnect(name: NameWallet) {
+    console.log('name:', name)
+    if(name===nameCurrentWallet){
+      myToast(`You are already connected to this wallet.`,"warning")
+      return;
+    }
+    if (name === 'fewcha') {
       handleConnectFewchaWallet();
-    } else if (walletHasBeenSelected === "martian") {
+    } else if (name === 'martian') {
       handleConnectMartianWallet();
-    } else if (walletHasBeenSelected === "petra") {
+    } else {
       handleConnectPetraWallet();
     }
-  }, [walletHasBeenSelected, numberOfClicks]);
+  }
+
 
   // ----> CONNECT FEWCHA WALLET ---->
   async function handleConnectFewchaWallet() {
     console.log("------> CONNECT FEWCHA ------>");
-    const hasFewchaInWindow: boolean | undefined = (window as any).fewcha;
-    if (!hasFewchaInWindow) {
-      toast(
-        "You have not installed fewcha wallet app! You will be redirected to the settings page",
-        optionsToastify
-      );
-      setTimeout(() => {
-        window.open(
-          "https://chrome.google.com/webstore/detail/fewcha-aptos-wallet/ebfidpplhabeedpnhjnobghokpiioolj",
-          "_blank"
-        );
-      }, 2800);
+    const fewcha = (window as any).fewcha;
+    console.log("fewcha: ", fewcha)
+    if (fewcha) {
+      try {
+        if (nameCurrentWallet === "fewcha") {
+          myToast("You are currently connected to this wallet", "info", 1200)
+          return;
+        }
+        const res = await (fewcha as any).connect();
+        console.log("res: ", res);
+
+        if (res.status === 200 && res.data.address) {
+          success("fewcha", res.data.address)
+          myToast("Connect Fewcha successfully!")
+        } else if (res.status === 401) {
+          myToast("Please create wallet first!", "warning", 1000)
+        }
+      } catch (error) {
+        console.log("Error: ", error);
+        myToast("Can not connect Fewcha wallet", "error")
+      }
+    } else {
+      notInstall(msgFewcha.msg, msgFewcha.urlExt)
       return;
-    }
-    try {
-      if (nameCurrentWallet === "fewcha") {
-        toast("You are currently connected to this wallet", optionsToastify);
-        return;
-      }
-      const res = await wallet.action.connect();
-      console.log("res: ", res);
-      if (res.status === 200 && res.data.address) {
-        setNameCurrentWallet("fewcha");
-        setHasConnectAnyWallet(true);
-        setAddressCurrentWallet(res.data.address);
-        setIsConnectedWallet(true);
-        setTimeout(() => {
-          setShowModal(false);
-        }, 1000);
-      }
-    } catch (error) {
-      console.log("Error: ", error);
     }
   }
 
   // ----> CONNECT MARTIAN WALLET ---->
   async function handleConnectMartianWallet() {
-    console.log("WINDOW: ", window);
-    const hasMartianInWindow = (window as any).martian;
-    console.log("hasMartianInWindow", hasMartianInWindow);
-
-    if (!hasMartianInWindow) {
-      toast(
-        "You have not installed martian wallet extension! You will be redirected to the settings page",
-        optionsToastify
-      );
-      setTimeout(() => {
-        window.open(
-          "https://chrome.google.com/webstore/detail/martian-aptos-wallet/efbglgofoippbgcjepnhiblaibcnclgk/related",
-          "_blank"
-        );
-      }, 2800);
-      return;
-    }
-    try {
-      const res = await hasMartianInWindow.connect();
-      if (res.status === 200 && res.address) {
-        setAddressCurrentWallet(res.address);
-        setNameCurrentWallet("martian");
-        setHasConnectAnyWallet(true);
-        setIsConnectedWallet(true);
-        toast("Connect Petra Wallet successfully!", optionsToastify);
-        setTimeout(() => {
-          setShowModal(false);
-        }, 1000);
+    console.log("------> CONNECT MARTIAN WALLET ------>");
+    const martian = (window as any).martian;
+    console.log("martian", martian);
+    if (martian) {
+      try {
+        const res = await martian.connect();
+        console.log("Result Connect Martian: ", res);
+        if (res.status === 200 && res.address) {
+          success("martian", res.address)
+          myToast("Connect Martian wallet successfully!")
+        }
+      } catch (error) {
+        console.log("error ---> ", error);
+        toast(" Wallet setup required", optionsToastify);
       }
-      console.log("res: ", res);
-    } catch (error) {
-      console.log("error ---> ", error);
-      toast(" Wallet setup required", optionsToastify);
+    } else {
+      notInstall(msgMartian.msg, msgMartian.urlExt)
     }
   }
 
   // -----> CONNECT PETRA WALLET ---->
   async function handleConnectPetraWallet() {
-    const hasPetraWalletInWindow = (window as any).petra;
-    console.log("hasPetraWalletInWindow", hasPetraWalletInWindow);
-
-    if (!hasPetraWalletInWindow) {
-      toast(
-        "You have not installed Petra wallet extension! You will be redirected to the settings page",
-        optionsToastify
-      );
-      setTimeout(() => {
-        window.open(
-          "https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci",
-          "_blank"
-        );
-      }, 2800);
-      return;
-    }
-
-    const resultConnect = await hasPetraWalletInWindow.connect();
-    console.log("connect petra: ", resultConnect);
-    if (resultConnect.address) {
-      setNameCurrentWallet("petra");
-      setAddressCurrentWallet(resultConnect.address);
-      setHasConnectAnyWallet(true);
-      setIsConnectedWallet(true);
-      toast("Connect Petra Wallet successfully!", optionsToastify);
-      setTimeout(() => {
-        setShowModal(false);
-      }, 1000);
+    console.log("------> CONNECT PETRA WALLET ------>");
+    const petra = (window as any).petra;
+    console.log("petra", petra);
+    if (petra) {
+      const resultConnect = await petra.connect();
+      console.log("Result connect Petra: ", resultConnect);
+      if (resultConnect.address) {
+        success("petra", resultConnect.address)
+        myToast("Connect Petra Wallet successfully!")
+      }
+    } else {
+      notInstall(msgPetra.msg, msgPetra.urlExt)
+      setShowModal(false)
     }
   }
 
@@ -249,15 +213,11 @@ const Header: React.FC<{
     if (nameCurrentWallet === "fewcha") {
       console.log("DISCONNECT FEWCHA WALLET ----> ");
       try {
-        const response = await wallet.action.disconnect();
+        const response = await (window as any).fewcha.disconnect();
         console.log("response: ", response);
         if (response.data) {
-          setDisconnectWallet("fewcha");
-          setNameCurrentWallet(null);
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-          setIsConnectedWallet(false);
+          reset()
+          disconnect()
         }
       } catch (error) {
         console.log(error);
@@ -266,18 +226,11 @@ const Header: React.FC<{
       console.log("DISCONNECT MARTIAN WALLET");
       try {
         const res = await (window as any).martian.disconnect();
-        const statusAfterDisconnect = await (
-          window as any
-        ).martian.isConnected();
-        if (res.method && !statusAfterDisconnect) {
-          setNameCurrentWallet("");
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-          setIsConnectedWallet(false);
+        if (res.method) {
+          reset()
+          disconnect()
         }
         console.log("res: ", res);
-        console.log("statusAfterDisconnect: ", statusAfterDisconnect);
       } catch (error) {
         console.log(error);
       }
@@ -285,15 +238,14 @@ const Header: React.FC<{
       console.log("DISCONNECT PETRA WALLET ----> ");
       try {
         const response = await (window as any).petra.disconnect();
+        console.log('response: ', response)
+
         const isConnectedAfterDisconnect = await (
           window as any
         ).petra.isConnected();
         if (!isConnectedAfterDisconnect) {
-          setNameCurrentWallet("");
-          setShowMore(false);
-          setSelectHasBeenSelected("");
-          setAddressCurrentWallet("");
-          setIsConnectedWallet(false);
+          reset()
+          disconnect()
         }
       } catch (error) {
         console.log("Error: ", error);
@@ -383,9 +335,8 @@ const Header: React.FC<{
         </button>
 
         <div
-          className={`block md:hidden hambuger ${
-            showMobile ? "is-active" : ""
-          }`}
+          className={`block md:hidden hambuger ${showMobile ? "is-active" : ""
+            }`}
           onClick={toggleMobile}
         >
           <span className="line"></span>
@@ -410,7 +361,7 @@ const Header: React.FC<{
         style={customStylesModal}
         contentLabel="Select Wallet"
       >
-        <section className="w-[450px] min-h-[220px] ">
+        <section className="w-[460px] min-h-[220px] ">
           <Title3>Select Wallet</Title3>
           <button
             onClick={closeModal}
@@ -420,22 +371,27 @@ const Header: React.FC<{
             <img src={icon_close} alt="Close Dialog Choose Wallet" />
           </button>
 
-          <ListWallet className="mt-3 uppercase font-medium">
+          <ListWallet className="mt-3  font-medium">
             {listWalletData.map((wallet) => (
               <WalletItem
                 key={wallet.name}
-                className="py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]"
-                onClick={() => {
-                  setSelectHasBeenSelected(wallet.name);
-                  setNumberOfClicks((prev) => (prev += 1));
-                }}
+                className={cn("py-3 flex items-center gap-x-3.5 mb-2 px-4 rounded-md hover:cursor-pointer hover:bg-[#ffcccc] hover:text-[#17c0eb]", {
+                  "hover:bg-gray-200 hover:!text-gray-100": wallet.name === nameCurrentWallet,
+                })}
+                onClick={() => handleConnect(wallet.name)}
               >
                 <img
                   src={wallet.logo}
                   alt={wallet.label}
                   className="w-8 h-8 rounded-full "
                 />
-                <p>{wallet.label}</p>
+                <p className="uppercase">{wallet.label}</p>
+                {wallet.name === nameCurrentWallet &&
+                  <div className="flex items-center gap-x-4">
+                    <p className="text-blue-500 pl-2 text-[14px] italic">Connected</p>
+                    <img src={icon_check} alt="Connected" />
+                  </div>
+                }
               </WalletItem>
             ))}
           </ListWallet>
