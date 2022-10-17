@@ -2,6 +2,7 @@
 @import "typefaces";
 @import "button";
 @import "custom";
+@import "background";
 
 @tailwind base;
 @tailwind components;
@@ -45,13 +46,15 @@
     @include fontSmall;
   }
   .shadow-type-1 {
-    box-shadow: 0px 4px 19px rgba(18, 29, 54, 0.09), inset 0px -1px 0px rgba(255, 255, 255, 0.25);
+    box-shadow: 0px 4px 19px rgba(18, 29, 54, 0.09),
+      inset 0px -1px 0px rgba(255, 255, 255, 0.25);
   }
   .shadow-type-2 {
     box-shadow: 0px 9px 13px rgba(0, 126, 251, 0.31);
   }
   .shadow-type-3 {
-    box-shadow: -12.1766px 36.6898px 44.9014px rgba(81, 78, 120, 0.18), inset 1.31294px 1.96941px 0px rgba(255, 255, 255, 0.6);
+    box-shadow: -12.1766px 36.6898px 44.9014px rgba(81, 78, 120, 0.18),
+      inset 1.31294px 1.96941px 0px rgba(255, 255, 255, 0.6);
   }
   .is-scroll {
     padding-top: 20px;
@@ -63,7 +66,14 @@
     clip-path: polygon(81.05% 9.1%, 92% 9.1%, 92% 10.1%, 81.05% 10.1%);
   }
   .main-bg {
-    background: linear-gradient(248deg, #dbdfe4 1.44%, #e1ebef 33.25%, #f4fafc 53%, rgba(232, 244, 255, 0.19) 69.71%, #ffffff 100%);
+    background: linear-gradient(
+      248deg,
+      #dbdfe4 1.44%,
+      #e1ebef 33.25%,
+      #f4fafc 53%,
+      rgba(232, 244, 255, 0.19) 69.71%,
+      #ffffff 100%
+    );
     position: relative;
     .main-bg-left {
       index: -999;
@@ -80,20 +90,40 @@
   }
 
   .container {
-    max-width: 1070px;
+    max-width: 1440px;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
+    // padding-left: 15px;
+    // padding-right: 15px;
     @media (min-width: 768px) {
-      max-width: 1150px;
-      padding-left: 40px;
-      padding-right: 40px;
+      // max-width: 1150px;
     }
     @media (min-width: 1024px) {
-      max-width: 1160px;
-      padding-left: 60px;
-      padding-right: 60px;
+      // max-width: 1024px;
+      padding-left: 120px;
+      padding-right: 120px;
     }
   }
+}
+
+.border1 {
+  border: 1px solid red;
+}
+
+.border2 {
+  border: 1px solid blue;
+}
+* {
+  box-sizing: border-box !important;
+}
+.h-event-page {
+  height: calc(100vh - 60px);
+  background: linear-gradient(
+      248deg,
+      #dbdfe4 1.44%,
+      #e1ebef 33.25%,
+      #f4fafc 53%,
+      rgba(232, 244, 255, 0.19) 69.71%,
+      #ffffff 100%
+    );
 }
