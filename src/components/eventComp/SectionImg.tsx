@@ -70,10 +70,10 @@ const SectionImg: React.FC<{ className?: string }> = ({ className }) => {
         className=" md:w-[80%] mx-auto rounded-md"
       />
       {nameWalletInStore !== "fewcha" && (
-        <div className="text-center mt-[80px]">
+        <div className="text-center mt-[52px] lg:mt-[80px]">
           <button
             onClick={handleConnectFewchaWallet}
-            className="bg-[#7158e2] py-3 w-full text-white rounded-2xl hover:opacity-[0.90]"
+            className="bg-[#7158e2]  py-3 w-full text-white rounded-2xl hover:opacity-[0.90] "
           >
             Connect Fewcha Wallet
           </button>
