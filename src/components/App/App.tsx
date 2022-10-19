@@ -20,8 +20,6 @@ const App: React.FC = () => {
   const web3 = new Web3(provider);
   const { account: web3Account, isConnected } = useWeb3();
 
- 
-
   return (
     <div className="">
       {/* <img className=" main-bg-left" src={left} alt="left" />
@@ -31,11 +29,13 @@ const App: React.FC = () => {
         web3Account={web3Account}
         isConnected={isConnected}
       />
-      <Routes>
-        <Route path="/" element={<MintNFTPage />} />
-        <Route path="/mint-nft" element={<MintNFTPage />} />
-        <Route path="/event" element={<EventPage />} />
-      </Routes>
+      <div className="content mt-[44px]">
+        <Routes>
+          <Route path="/" element={<MintNFTPage />} />
+          <Route path="/mint-nft" element={<MintNFTPage />} />
+          <Route path="/event" element={<EventPage />} />
+        </Routes>
+      </div>
 
       {/* <NFTv2 wallet={web3} /> */}
       <ToastContainer />
