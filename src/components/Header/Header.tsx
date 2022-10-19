@@ -474,16 +474,19 @@ const Header: React.FC<{
           }
         )}
       >
-        {!hasConnectAnyWallet && (
+         
           <Link to="/">
             <img
               src={logo}
               alt="logo"
-              className="max-w-[80px] md:max-w-[155px]"
+              className={cn("max-w-[80px] md:max-w-[155px]",{
+                "hidden md:inline-block": hasConnectAnyWallet
+              })}
+              
               onClick={() => setCurrentPage("/")}
             />
           </Link>
-        )}
+        
         {MENUS &&
           MENUS.map((item) => {
             return (
