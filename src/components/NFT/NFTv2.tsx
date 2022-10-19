@@ -207,10 +207,9 @@ const NFTv2: React.FC<{ wallet: Aptos }> = ({ wallet }) => {
   };
 
   return (
-    <section className="h-screen relative pt-[80px]">
-      <section className="grid 2xl:grid-cols-10 xl:grid-cols-12 2xl:max-w-[1440px] xl:max-w-[1280px] lg:max-w-[768px] mx-auto">
-        <div className="w-[480px] 2xl:col-span-10 xl:col-span-12 mx-auto flex-row space-y-[36px] bg-white border-none rounded-3xl">
-          {/* tabs */}
+    <section className="h-screen relative pt-[80px] ">
+      <section className="">
+        <div className="w-[95%] md:w-[480px] lg:w-[500px] mx-auto bg-white rounded-3xl">
           <div className="flex text-center">
             <div
               onClick={() => onChangeTab(0)}
