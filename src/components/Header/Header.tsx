@@ -400,7 +400,7 @@ const Header: React.FC<{
       </Modal>
 
       <div
-        className={cn("container flex items-center justify-between pl-3 py-1.5 gap-x-2 text-white", {
+        className={cn("container flex items-center justify-between pl-3 py-2 md:py-2.5 lg:py-3 gap-x-2 text-white", {
           "": pathName === "/event",
         })}
       >
