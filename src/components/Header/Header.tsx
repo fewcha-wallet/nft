@@ -368,7 +368,7 @@ const Header: React.FC<{
         style={customStylesModal}
         contentLabel="Select Wallet"
       >
-        <section className="w-[460px] min-h-[220px] ">
+        <section className="max-w-[95%] mx-auto lg:w-[460px] min-h-[220px] ">
           <Title3>Select Wallet</Title3>
           <button
             onClick={() => setShowModal(false)}
@@ -417,7 +417,7 @@ const Header: React.FC<{
         style={customStylesModal}
         contentLabel="Select network"
       >
-        <div className="w-[450px]">
+        <div className="w-full md:w-[450px]">
           <div className="flex items-center justify-between border-b border-gray-300 mb-5 px-3">
             <h3 className="font-bold text-xl">Select network</h3>
             <div
@@ -436,7 +436,7 @@ const Header: React.FC<{
             {networks.map((n) => (
               <div
                 key={n.url}
-                className="flex items-center gap-x-4 mb-4 hover:bg-gray-100 px-3 rounded-md"
+                className="flex items-center gap-x-4 mb-1 hover:bg-gray-100 px-3 py-2.5 rounded-md"
               >
                 <input
                   type="radio"
@@ -474,14 +474,16 @@ const Header: React.FC<{
           }
         )}
       >
-        <Link to="/">
-          <img
-            src={logo}
-            alt="logo"
-            className="max-w-[80px] md:max-w-[155px]"
-            onClick={() => setCurrentPage("/")}
-          />
-        </Link>
+        {!hasConnectAnyWallet && (
+          <Link to="/">
+            <img
+              src={logo}
+              alt="logo"
+              className="max-w-[80px] md:max-w-[155px]"
+              onClick={() => setCurrentPage("/")}
+            />
+          </Link>
+        )}
         {MENUS &&
           MENUS.map((item) => {
             return (
