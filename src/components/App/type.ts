@@ -29,3 +29,9 @@ export const listWalletData: Array<WalletItemType> = [
     label: "Petra Aptos Wallet",
   },
 ];
+
+export interface NetworkItem {
+  type:'Devnet' |'Testnet' |'AIT3' |'Devnet',
+  label:"Aptos" |"SUI",
+  url:string
+}

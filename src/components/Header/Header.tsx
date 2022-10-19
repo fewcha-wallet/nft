@@ -6,6 +6,7 @@ import {
   listWalletData,
   LogoType,
   NameWallet,
+  NetworkItem,
 } from "components/App/type";
 import {
   customStylesModal,
@@ -13,8 +14,10 @@ import {
   msgFewcha,
   msgMartian,
   msgPetra,
+  networks,
   optionsToastify,
 } from "config/constants";
+import { selectNetwork, updateNetwork } from "feature/network/network-slice";
 import {
   disConnectWallet,
   selectIsConnected,
@@ -50,6 +53,7 @@ const Header: React.FC<{
 }> = ({ wallet, web3Account, isConnected }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
+  const [showModalNetwork, setShowModalNetwork] = useState<boolean>(false);
   const [addressCurrentWallet, setAddressCurrentWallet] = useState<string>("");
   const [nameCurrentWallet, setNameCurrentWallet] = useState<NameWallet>("");
   const [hasConnectAnyWallet, setHasConnectAnyWallet] =
@@ -62,6 +66,8 @@ const Header: React.FC<{
   const myLocation = useLocation();
 
   const [isConnectedWallet, setIsConnectedWallet] = useState<boolean>(false);
+  const networkInstore = useAppSelector(selectNetwork);
+  const [network, setNetwork] = useState<NetworkItem>(networkInstore);
 
   const walletInStore = useAppSelector(selectWallet);
 
@@ -96,7 +102,7 @@ const Header: React.FC<{
     setTimeout(() => {
       setShowModal(false);
     }, time);
-    dispatch(updateWallet({ name, address, isConnected: isConnectedWallet }));
+    dispatch(updateWallet({ name, address, isConnected: true }));
   };
 
   useEffect(() => {
@@ -269,12 +275,18 @@ const Header: React.FC<{
   const handleShowDialogWallet = () => {
     setShowModal(true);
   };
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-  }
-  function closeModal() {
-    setShowModal(false);
-  }
+
+  //  --------> NETWORK --------->
+  const handleOpenModalNetwork = () => {
+    console.log("SELECT NETWORK");
+    setShowMore(false);
+    setShowModalNetwork(true);
+  };
+  const handleSelectNetwork = (n: NetworkItem) => {
+    console.log("NETWORK --->: ", n);
+    dispatch(updateNetwork(n));
+    setNetwork(n);
+  };
 
   function connectWalletAndAfterConnect() {
     if (hasConnectAnyWallet) {
@@ -297,17 +309,17 @@ const Header: React.FC<{
               src={showMore ? icon_chevron_up : icon_chevron_down}
               alt="More"
               title="More - Disconnect"
-              className="hover:cursor-pointer relative -top-[2px]"
+              className="hover:cursor-pointer relative p-2 hover:bg-gray-100 rounded-full -top-[2px]"
               onClick={() => setShowMore((prev) => !prev)}
             />
           </div>
 
           {showMore && (
-            <div
-              onClick={handleDisconnectWallet}
-              className="text-white hover:cursor-pointer absolute font-bold  bg-[#34495e] max-w-max px-3 rounded min-h-[64px] shadow py-2"
-            >
-              <article className="flex gap-x-2 mb-1 items-center hover:text-red-500">
+            <div className="text-white hover:cursor-pointer absolute font-bold  bg-[#34495e] max-w-max px-3 rounded min-h-[64px] shadow py-2">
+              <article
+                className="flex gap-x-2 mb-1 items-center hover:text-red-500"
+                onClick={handleDisconnectWallet}
+              >
                 <p>Disconnect</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -319,6 +331,7 @@ const Header: React.FC<{
                   <path d="M534.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L434.7 224 224 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM192 96c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-53 0-96 43-96 96l0 256c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z" />
                 </svg>
               </article>
+              <p onClick={handleOpenModalNetwork}>Select network</p>
               <p
                 onClick={(e) => handleSlectOtherWallet(e)}
                 className="py-1 hover:text-blue-500"
@@ -351,15 +364,14 @@ const Header: React.FC<{
     >
       <Modal
         isOpen={showModal}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
+        onRequestClose={() => setShowModal(false)}
         style={customStylesModal}
         contentLabel="Select Wallet"
       >
         <section className="w-[460px] min-h-[220px] ">
           <Title3>Select Wallet</Title3>
           <button
-            onClick={closeModal}
+            onClick={() => setShowModal(false)}
             className="cursor-pointer absolute top-4 right-5 hover:bg-[#ecf0f1] p-2 rounded-full group"
             title="Close Dialog Choose Wallet"
           >
@@ -399,10 +411,68 @@ const Header: React.FC<{
         </section>
       </Modal>
 
+      <Modal
+        isOpen={showModalNetwork}
+        onRequestClose={() => setShowModalNetwork(false)}
+        style={customStylesModal}
+        contentLabel="Select network"
+      >
+        <div className="w-[450px]">
+          <div className="flex items-center justify-between border-b border-gray-300 mb-5 px-3">
+            <h3 className="font-bold text-xl">Select network</h3>
+            <div
+              className="hover:cursor-pointer hover:bg-gray-300 p-1.5 rounded-full"
+              onClick={() => setShowModalNetwork(false)}
+            >
+              <img
+                src={icon_close}
+                alt="Close Dialog Network"
+                title="Close Dialog network"
+                className="w-4 h-4 "
+              />
+            </div>
+          </div>
+          <div>
+            {networks.map((n) => (
+              <div
+                key={n.url}
+                className="flex items-center gap-x-4 mb-4 hover:bg-gray-100 px-3 rounded-md"
+              >
+                <input
+                  type="radio"
+                  name="network"
+                  id={n.url}
+                  value={n.url}
+                  onChange={() => handleSelectNetwork(n)}
+                  className="hover:cursor-pointer"
+                  checked={network.url === n.url ? true : false}
+                />
+                <label htmlFor={n.url} className="hover:cursor-pointer flex-1">
+                  <p>
+                    <span className="pr-2">{n.type}</span>
+                    <span className="font-medium">{n.label}</span>
+                  </p>
+                  <p>{n.url}</p>
+                </label>
+              </div>
+            ))}
+            <button
+              className="bg-[#dab642] hover:bg-[#bd9710] block mx-auto px-7 text-white py-1.5 text-center rounded-md mt-6 "
+              onClick={() => setShowModalNetwork(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       <div
-        className={cn("container flex items-center justify-between pl-3 py-2 md:py-2.5 lg:py-3 gap-x-2 text-white", {
-          "": pathName === "/event",
-        })}
+        className={cn(
+          "container flex items-center justify-between pl-3 py-2 md:py-2.5 lg:py-3 gap-x-2 text-white",
+          {
+            "": pathName === "/event",
+          }
+        )}
       >
         <Link to="/">
           <img
