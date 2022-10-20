@@ -1,11 +1,8 @@
 import Web3, { Web3Provider } from "@fewcha/web3";
 import { useWeb3 } from "@fewcha/web3-react";
 import Header from "components/Header/Header";
-import NFTv2 from "components/NFT/NFTv2";
+import MintNFT from "components/NFT/MintNFT";
 import EventPage from "pages/eventPage";
-import MintNFTPage from "pages/mintNFT";
-import left from "public/svgs/left.svg";
-import right from "public/svgs/right.svg";
 import React from "react";
 import Modal from "react-modal";
 import { Route, Routes } from "react-router-dom";
@@ -21,9 +18,7 @@ const App: React.FC = () => {
   const { account: web3Account, isConnected } = useWeb3();
 
   return (
-    <div className="">
-      {/* <img className=" main-bg-left" src={left} alt="left" />
-      <img className="main-bg-right" src={right} alt="right" /> */}
+    <div>
       <Header
         wallet={web3}
         web3Account={web3Account}
@@ -31,13 +26,11 @@ const App: React.FC = () => {
       />
       <div className="content mt-[44px]">
         <Routes>
-          <Route path="/" element={<MintNFTPage />} />
-          <Route path="/mint-nft" element={<MintNFTPage />} />
+          <Route path="/" element={<MintNFT wallet={web3}/>} />
+          <Route path="/mint-nft" element={<MintNFT wallet={web3}/>} />
           <Route path="/event" element={<EventPage />} />
         </Routes>
       </div>
-
-      {/* <NFTv2 wallet={web3} /> */}
       <ToastContainer />
     </div>
   );

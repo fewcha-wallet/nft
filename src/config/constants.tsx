@@ -65,8 +65,6 @@ export const optionsToastify: ToastOptions<{}> = {
   type: "info",
 };
 
-
-
 interface MsgType {
   msg: string;
   urlExt: string;
@@ -80,22 +78,24 @@ export const msgFewcha: MsgType = {
 
 export const msgMartian: MsgType = {
   msg: "You have not installed martian wallet app! You will be redirected to the install page",
-  urlExt: "https://chrome.google.com/webstore/detail/martian-aptos-wallet/efbglgofoippbgcjepnhiblaibcnclgk/related",
-}
+  urlExt:
+    "https://chrome.google.com/webstore/detail/martian-aptos-wallet/efbglgofoippbgcjepnhiblaibcnclgk/related",
+};
 export const msgPetra: MsgType = {
   msg: "You have not installed Petra wallet extension! You will be redirected to the settings page",
-  urlExt: "https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci"
-}
+  urlExt:
+    "https://chrome.google.com/webstore/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci",
+};
 
-export const networks:Array<NetworkItem> = [
+export const networks: Array<NetworkItem> = [
   // {
   //   type:"Devnet",
   //   label:"Aptos",
   //   url:"https://fullnode.devnet.aptoslabs.com"
   // },
   {
-    type:"Testnet",
-    label:"Aptos",
+    type: "Testnet",
+    label: "Aptos",
     // url:"https://fullnode.testnet.aptoslabs.com"
   },
   // {
@@ -104,8 +104,38 @@ export const networks:Array<NetworkItem> = [
   //   url:"https://ait3.aptosdev.com"
   // },
   {
-    type:"Devnet",
-    label:"SUI",
+    type: "Devnet",
+    label: "SUI",
     // url:"https://gateway.devnet.sui.io"
-  }
-]
+  },
+];
+
+interface NFTItem {
+  index: number;
+  url: string;
+}
+export const nfts: NFTItem[] = [
+  {
+    index: 0,
+    url: "https://scontent.fsgn2-5.fna.fbcdn.net/v/t1.6435-9/90234375_831684853993938_3886786635118936064_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pqO6-8q3l9oAX9iiLcL&_nc_ht=scontent.fsgn2-5.fna&oh=00_AT_L7Oot2LWdTCxA_K6i_7jkIeMNjhuBWaf_-QYQigkx8A&oe=636540F5",
+  },
+  {
+    index: 1,
+    url: "https://scontent.fsgn2-5.fna.fbcdn.net/v/t1.6435-9/90234375_831684853993938_3886786635118936064_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pqO6-8q3l9oAX9iiLcL&_nc_ht=scontent.fsgn2-5.fna&oh=00_AT_L7Oot2LWdTCxA_K6i_7jkIeMNjhuBWaf_-QYQigkx8A&oe=636540F5",
+  },
+  {
+    index: 2,
+    url: "https://scontent.fsgn2-5.fna.fbcdn.net/v/t1.6435-9/90234375_831684853993938_3886786635118936064_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pqO6-8q3l9oAX9iiLcL&_nc_ht=scontent.fsgn2-5.fna&oh=00_AT_L7Oot2LWdTCxA_K6i_7jkIeMNjhuBWaf_-QYQigkx8A&oe=636540F5",
+  },
+];
+
+export const tabs: { label: string; id: number }[] = [
+  {
+    id:1,
+    label: "Create collection",
+  },
+  {
+    id:2,
+    label: "Mint a NFT",
+  },
+];
