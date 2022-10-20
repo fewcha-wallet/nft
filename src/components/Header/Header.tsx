@@ -174,7 +174,7 @@ const Header: React.FC<{
   }
 
   // ----> CONNECT FEWCHA WALLET ---->
-  async function handleConnectFewchaWallet() {
+   async  function handleConnectFewchaWallet() {
     console.log("------> CONNECT FEWCHA ------>");
     const fewcha = (window as any).fewcha;
     console.log("fewcha: ", fewcha);

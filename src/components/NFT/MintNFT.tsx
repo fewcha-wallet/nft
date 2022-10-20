@@ -1,7 +1,8 @@
-import Aptos from "@fewcha/web3";
+import  Aptos, { Web3Provider, Web3SDK } from "@fewcha/web3";
 import Error from "components/Error/Error";
 import Input from "components/Input/Input";
 import { nfts, tabs } from "config/constants";
+import { myToast } from "libs/libs";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import cn from "services/cn";
@@ -11,10 +12,19 @@ import {
   mintNFTResolver,
   NFTType,
 } from "services/resolver";
+import * as fcw from '@fewcha/web3'
+
+import * as at from 'aptos'
+
 
 const CreateCollection: React.FC<{ wallet: Aptos }> = ({ wallet }) => {
-  console.log("wallet: ", wallet);
-
+  console.log("---> WALLET: ", wallet);
+  console.log('at: ',at)
+  console.log('fcw: ',fcw)
+  // console.log('Aptos: ',Aptos())
+  
+  
+  const sdk: Web3SDK | any = wallet.action?.sdk;
   const {
     register: collectionRegister,
     handleSubmit: collectionHandleSubmit,
@@ -26,11 +36,33 @@ const CreateCollection: React.FC<{ wallet: Aptos }> = ({ wallet }) => {
     shouldFocusError: true,
     shouldUnregister: false,
   });
-  const onSubmit: SubmitHandler<CollectionType> = (data) => {
-    console.log("Data create collection:  ",data)
+  const onSubmit: SubmitHandler<CollectionType> = async (data) => {
+    console.log("Data create collection:  ", data);
+    const fewcha = (window as any).fewcha;
+    console.log("fewcha:", fewcha);
+    const isConnectedFewcha = await fewcha.isConnected();
+    console.log("isConnectedFewcha: ", isConnectedFewcha);
+
+    if (!isConnectedFewcha.data) {
+      myToast("You need connect fewcha wallet!", "error");
+    }
+    const payload = (Aptos as any).transactionBuilder?.buildTransactionPayload(
+      "0x3::token::create_collection_script",
+      [],
+      [data.collection, "description", "uri", 100, [false, false, false]]
+    );
+    const gen = await (window as any).fewcha.sdk?.generateRawTransaction(
+      payload
+    );
+    console.log("gen: ", gen);
+    if (gen.status === 200) {
+      //
+      const res = await fewcha.signAndSubmitTransaction(gen.data);
+      console.log("res: ", res);
+    }
 
     wallet.action?.token
-      .createCollection(
+      ?.createCollection(
         `fewcha try ${data.collection}`,
         `fewcha try ${data.collection} desc`,
         "https://fewcha.app/svgs/logo.svg"
@@ -220,25 +252,10 @@ const MintNFT: React.FC<{ wallet: Aptos }> = ({ wallet }) => {
             </div>
           ))}
         </div>
-        {tab === 1 ? <CreateCollection wallet={wallet} /> : <Mint />}
+        {tab === 1 ? <CreateCollection  wallet={wallet} /> : <Mint />}
       </div>
     </section>
   );
 };
 
 export default MintNFT;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

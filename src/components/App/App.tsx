@@ -1,4 +1,5 @@
-import Web3, { Web3Provider } from "@fewcha/web3";
+import Web3, { Aptos, Web3Provider } from "@fewcha/web3";
+import * as test from '@fewcha/web3'
 import { useWeb3 } from "@fewcha/web3-react";
 import Header from "components/Header/Header";
 import MintNFT from "components/NFT/MintNFT";
@@ -11,11 +12,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 Modal.setAppElement("#root");
 
+
 const App: React.FC = () => {
+  
   const fewcha = (window as any).fewcha;
   const provider = new Web3Provider(fewcha);
   const web3 = new Web3(provider);
   const { account: web3Account, isConnected } = useWeb3();
+
+  console.log("-----> Test: ",test)
+  const apt = test.Aptos
+
+  console.log("-----> apt: ",apt)
 
   return (
     <div>
@@ -26,8 +34,11 @@ const App: React.FC = () => {
       />
       <div className="content mt-[44px]">
         <Routes>
-          <Route path="/" element={<MintNFT wallet={web3}/>} />
-          <Route path="/mint-nft" element={<MintNFT wallet={web3}/>} />
+          <Route path="/" element={<MintNFT wallet={web3} />} />
+          <Route
+            path="/mint-nft"
+            element={<MintNFT  wallet={web3} />}
+          />
           <Route path="/event" element={<EventPage />} />
         </Routes>
       </div>
