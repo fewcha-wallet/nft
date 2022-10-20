@@ -35,3 +35,4 @@ export interface NetworkItem {
   label: "Aptos" | "SUI";
   url?: string;
 }
+
