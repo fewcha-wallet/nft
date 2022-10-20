@@ -7,7 +7,7 @@ export type BalanceType = number | string | null;
 export interface WalletItemType {
   name: NameWallet;
   logo: string;
-  label: string;
+  label?: string;
 }
 export type LogoType = string | undefined;
 export type HasConnectWalletType = boolean | undefined;
@@ -31,7 +31,7 @@ export const listWalletData: Array<WalletItemType> = [
 ];
 
 export interface NetworkItem {
-  type:'Devnet' |'Testnet' |'AIT3' |'Devnet',
-  label:"Aptos" |"SUI",
-  url:string
+  type: "Devnet" | "Testnet";
+  label: "Aptos" | "SUI";
+  url?: string;
 }

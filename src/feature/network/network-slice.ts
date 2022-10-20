@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: NetworkItem = {
   type: "Testnet",
   label: "Aptos",
-  url: "https://fullnode.devnet.aptoslabs.com",
+  // url: "https://fullnode.devnet.aptoslabs.com",
 };
 const networkSlice = createSlice({
   name: "network",
@@ -14,13 +14,11 @@ const networkSlice = createSlice({
     updateNetwork(state, action: PayloadAction<NetworkItem>) {
       state.type = action.payload.type;
       state.label = action.payload.label;
-      state.url = action.payload.url;
     },
 
     reset(state) {
       state.type = "Testnet";
       state.label = "Aptos";
-      state.url = "https://fullnode.devnet.aptoslabs.com";
     },
   },
 });

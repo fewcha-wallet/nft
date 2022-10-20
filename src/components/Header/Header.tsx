@@ -7,6 +7,7 @@ import {
   LogoType,
   NameWallet,
   NetworkItem,
+  WalletItemType,
 } from "components/App/type";
 import {
   customStylesModal,
@@ -39,6 +40,8 @@ import icon_close from "../../assets2/image/icon_close.svg";
 import logo_fewcha from "../../assets2/image/logo_fewcha.jpg";
 import logo_martian from "../../assets2/image/logo_martian.jpg";
 import logo_petra from "../../assets2/image/logo_petra.jpg";
+import logo_aptos from "../../assets2/image/logo_aptos.svg";
+import logo_sui from "../../assets2/image/logo_sui.png";
 import logo from "../../public/svgs/logo.svg";
 import { Title3 } from "../common/StyledComponent";
 
@@ -53,6 +56,7 @@ const Header: React.FC<{
 }> = ({ wallet, web3Account, isConnected }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
+  const [showSlectNetwork, setShowSelectNetwork] = useState<boolean>(false);
   const [showModalNetwork, setShowModalNetwork] = useState<boolean>(false);
   const [addressCurrentWallet, setAddressCurrentWallet] = useState<string>("");
   const [nameCurrentWallet, setNameCurrentWallet] = useState<NameWallet>("");
@@ -73,6 +77,8 @@ const Header: React.FC<{
 
   const isConnectedInStore = useAppSelector(selectIsConnected);
   // console.log("isConnectedInStore: ", isConnectedInStore);
+  const [listWallet, setListWallet] =
+    useState<WalletItemType[]>(listWalletData);
 
   useEffect(() => {
     if (isConnectedInStore) {
@@ -108,6 +114,26 @@ const Header: React.FC<{
   useEffect(() => {
     setPathName(myLocation.pathname);
   }, [myLocation.pathname]);
+
+  useEffect(() => {
+    if (network.label === "SUI") {
+      const newListWallet = listWalletData.filter(
+        (wallet) => wallet.name === "fewcha"
+      );
+      setListWallet((prev) => {
+        if (newListWallet && newListWallet.length > 0) {
+          return newListWallet;
+        }
+        return prev;
+      });
+    }
+    if (network.label === "Aptos") setListWallet(listWalletData);
+    if (nameCurrentWallet === "martian") {
+      disConnectMartianWallet();
+    } else if (nameCurrentWallet === "petra") {
+      disConnectMartianWallet();
+    }
+  }, [network]);
 
   useEffect(() => {
     if (!nameCurrentWallet) {
@@ -221,46 +247,64 @@ const Header: React.FC<{
   async function handleDisconnectWallet() {
     if (!hasConnectAnyWallet) return;
     console.log("DISCONNECT  WALLET ----> ");
-    if (nameCurrentWallet === "fewcha") {
-      console.log("DISCONNECT FEWCHA WALLET ----> ");
-      try {
-        const response = await (window as any).fewcha.disconnect();
-        console.log("response: ", response);
-        if (response.data) {
-          reset();
-          disconnect();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (nameCurrentWallet === "martian") {
-      console.log("DISCONNECT MARTIAN WALLET");
-      try {
-        const res = await (window as any).martian.disconnect();
-        if (res.method) {
-          reset();
-          disconnect();
-        }
-        console.log("res: ", res);
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log("DISCONNECT PETRA WALLET ----> ");
-      try {
-        const response = await (window as any).petra.disconnect();
-        console.log("response: ", response);
 
-        const isConnectedAfterDisconnect = await (
-          window as any
-        ).petra.isConnected();
-        if (!isConnectedAfterDisconnect) {
-          reset();
-          disconnect();
-        }
-      } catch (error) {
-        console.log("Error: ", error);
+    switch (nameCurrentWallet) {
+      case "fewcha":
+        disConnectFewchaWallet();
+        break;
+      case "martian":
+        disConnectMartianWallet();
+        break;
+      case "petra":
+        disConnectPetraWallet();
+        break;
+      default:
+        break;
+    }
+  }
+
+  async function disConnectFewchaWallet() {
+    console.log("DISCONNECT FEWCHA WALLET ----> ");
+    try {
+      const response = await (window as any).fewcha.disconnect();
+      console.log("response: ", response);
+      if (response.data) {
+        reset();
+        disconnect();
       }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function disConnectPetraWallet() {
+    console.log("DISCONNECT PETRA WALLET ----> ");
+    try {
+      const response = await (window as any).petra.disconnect();
+      console.log("response: ", response);
+
+      const isConnectedAfterDisconnect = await (
+        window as any
+      ).petra.isConnected();
+      if (!isConnectedAfterDisconnect) {
+        reset();
+        disconnect();
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
+  async function disConnectMartianWallet() {
+    console.log("DISCONNECT MARTIAN WALLET");
+    try {
+      const res = await (window as any).martian.disconnect();
+      if (res.method) {
+        reset();
+        disconnect();
+      }
+      console.log("res: ", res);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -282,6 +326,7 @@ const Header: React.FC<{
     setShowMore(false);
     setShowModalNetwork(true);
   };
+
   const handleSelectNetwork = (n: NetworkItem) => {
     console.log("NETWORK --->: ", n);
     dispatch(updateNetwork(n));
@@ -359,7 +404,7 @@ const Header: React.FC<{
   return (
     <header
       className={
-        "fixed top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300 bg-blue-500 !text-[16px] md:!text-lg"
+        "fixed top-0 left-0 right-0 w-full z-[999] transition-all ease-in-out duration-300 bg-blue-500 !text-[16px] md:!text-lg h-[60px]"
       }
     >
       <Modal
@@ -379,7 +424,7 @@ const Header: React.FC<{
           </button>
 
           <ListWallet className="mt-3  font-medium">
-            {listWalletData.map((wallet) => (
+            {listWallet.map((wallet) => (
               <WalletItem
                 key={wallet.name}
                 className={cn(
@@ -435,24 +480,24 @@ const Header: React.FC<{
           <div>
             {networks.map((n) => (
               <div
-                key={n.url}
+                key={n.label}
                 className="flex items-center gap-x-4 mb-1 hover:bg-gray-100 px-3 py-2.5 rounded-md"
               >
                 <input
                   type="radio"
                   name="network"
-                  id={n.url}
-                  value={n.url}
+                  id={n.label}
+                  value={n.label}
                   onChange={() => handleSelectNetwork(n)}
                   className="hover:cursor-pointer"
-                  checked={network.url === n.url ? true : false}
+                  checked={network.label === n.label ? true : false}
                 />
-                <label htmlFor={n.url} className="hover:cursor-pointer flex-1">
-                  <p>
-                    <span className="pr-2">{n.type}</span>
-                    <span className="font-medium">{n.label}</span>
-                  </p>
-                  <p>{n.url}</p>
+                <label
+                  htmlFor={n.label}
+                  className="hover:cursor-pointer flex-1"
+                >
+                  <span className="font-medium pr-2">{n.label}</span>
+                  <span className="">{n.type}</span>
                 </label>
               </div>
             ))}
@@ -474,19 +519,17 @@ const Header: React.FC<{
           }
         )}
       >
-         
-          <Link to="/">
-            <img
-              src={logo}
-              alt="logo"
-              className={cn("max-w-[80px] md:max-w-[155px]",{
-                "hidden md:inline-block": hasConnectAnyWallet
-              })}
-              
-              onClick={() => setCurrentPage("/")}
-            />
-          </Link>
-        
+        <Link to="/">
+          <img
+            src={logo}
+            alt="logo"
+            className={cn("max-w-[80px] md:max-w-[155px]", {
+              "hidden md:inline-block": hasConnectAnyWallet,
+            })}
+            onClick={() => setCurrentPage("/")}
+          />
+        </Link>
+
         {MENUS &&
           MENUS.map((item) => {
             return (
@@ -502,6 +545,29 @@ const Header: React.FC<{
               </Link>
             );
           })}
+        <div
+          className={cn("flex items-center", {
+            "gap-x-1": network.label === "Aptos",
+          })}
+        >
+          <img
+            src={network.label === "Aptos" ? logo_aptos : logo_sui}
+            alt="Aptos network"
+            className={network.label === "SUI" ? "w-10 h-10" : ""}
+            title={`Network: ${network.label} ${network.type}`}
+          />
+          <img
+            src={showSlectNetwork ? icon_chevron_up : icon_chevron_down}
+            alt="More"
+            title="Select network"
+            className="hover:cursor-pointer  p-2 hover:bg-gray-100 rounded-full"
+            onClick={() => {
+              setShowSelectNetwork((prev) => !prev);
+              setShowModalNetwork(true);
+            }}
+          />
+        </div>
+
         {connectWalletAndAfterConnect()}
       </div>
     </header>

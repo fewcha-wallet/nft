@@ -59,7 +59,7 @@ export const optionsToastify: ToastOptions<{}> = {
   autoClose: 2000,
   hideProgressBar: false,
   closeOnClick: true,
-  pauseOnHover: true,
+  pauseOnHover: false,
   draggable: true,
   progress: undefined,
   type: "info",
@@ -88,24 +88,24 @@ export const msgPetra: MsgType = {
 }
 
 export const networks:Array<NetworkItem> = [
-  {
-    type:"Devnet",
-    label:"Aptos",
-    url:"https://fullnode.devnet.aptoslabs.com"
-  },
+  // {
+  //   type:"Devnet",
+  //   label:"Aptos",
+  //   url:"https://fullnode.devnet.aptoslabs.com"
+  // },
   {
     type:"Testnet",
     label:"Aptos",
-    url:"https://fullnode.testnet.aptoslabs.com"
+    // url:"https://fullnode.testnet.aptoslabs.com"
   },
-  {
-    type:"AIT3",
-    label:"Aptos",
-    url:"https://ait3.aptosdev.com"
-  },
+  // {
+  //   type:"AIT3",
+  //   label:"Aptos",
+  //   url:"https://ait3.aptosdev.com"
+  // },
   {
     type:"Devnet",
     label:"SUI",
-    url:"https://gateway.devnet.sui.io"
+    // url:"https://gateway.devnet.sui.io"
   }
 ]
